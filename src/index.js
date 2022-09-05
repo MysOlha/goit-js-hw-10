@@ -13,19 +13,18 @@ inputForm.addEventListener('input', debounce(inputCountry, DEBOUNCE_DELAY))
 
 function inputCountry() {
   const name = inputForm.value.trim()
-  if (name === '') {
-    return (countryList.innerHTML = ''), (countryInfo.innerHTML = '')
+  if (!name) {
+    resetInput()
   }
 
   fetchCountries(name)
     .then(countries => {
-        countryList.innerHTML = ''
-        countryInfo.innerHTML = ''
-        if (countries.length === 1) {
-        countryList.insertAdjacentHTML('beforeend', oneCountryInfo(countries))
+      resetInput()
+        if (countries.length >= 10) {
+         Notiflix.Notify.info('Too many matches found. Please enter a more specific name.') 
+        } else if (countries.length === 1) {   
         countryInfo.insertAdjacentHTML('beforeend', countriesList(countries))
-      } else if (countries.length >= 10) {
-       manyCountry()
+        countryList.insertAdjacentHTML('beforeend', oneCountryInfo(countries))
       } else {
         countryList.insertAdjacentHTML('beforeend', oneCountryInfo(countries))
       }
@@ -33,22 +32,29 @@ function inputCountry() {
     .catch(noCountry)
 }
 
+function resetInput(){
+  countryList.innerHTML = '',
+  countryInfo.innerHTML = ''
+}
+
 function oneCountryInfo(countries) {
-  const markup = countries
+  console.log(countries)
+ return countries
     .map(({ name, flags }) => {
       return `
           <li class="country-list__item">
-              <img src="${flags.svg}" alt="Flag of ${name.official}" width = 30px height = 30px>
+              <img src="${flags.svg}" alt="Flag of ${name.official}" width = 60px height = 30px>
               <h2 class="country-list__name">${name.official}</h2>
           </li>
           `
     })
     .join('')
-  return markup
+ 
 }
 
 function countriesList(countries) {
-  const markup = countries
+ console.log(countries)
+  return countries
     .map(({ capital, population, languages }) => {
       return `
         <ul >
@@ -59,12 +65,9 @@ function countriesList(countries) {
         `
     })
     .join('')
-  return markup
+ 
 }
 
-function manyCountry(){
-    Notiflix.Notify.info('Too many matches found. Please enter a more specific name.')
-}
 
 function noCountry(){
     Notiflix.Notify.failure('Oops, there is no country with that name')
