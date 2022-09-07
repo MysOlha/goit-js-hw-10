@@ -13,33 +13,34 @@ inputForm.addEventListener('input', debounce(inputCountry, DEBOUNCE_DELAY))
 
 function inputCountry() {
   const name = inputForm.value.trim()
-  if (!name) {
-    resetInput()
+  if (name === '') {
+   return resetInput()
   }
 
   fetchCountries(name)
     .then(countries => {
       resetInput()
         if (countries.length >= 10) {
-         Notiflix.Notify.info('Too many matches found. Please enter a more specific name.') 
+          Notiflix.Notify.info('Too many matches found. Please enter a more specific name.') 
         } else if (countries.length === 1) {   
         countryInfo.insertAdjacentHTML('beforeend', countriesList(countries))
         countryList.insertAdjacentHTML('beforeend', oneCountryInfo(countries))
       } else {
         countryList.insertAdjacentHTML('beforeend', oneCountryInfo(countries))
       }
+      return
     })
     .catch(noCountry)
 }
 
 function resetInput(){
-  countryList.innerHTML = '',
+  countryList.innerHTML = '';
   countryInfo.innerHTML = ''
 }
 
 function oneCountryInfo(countries) {
-  console.log(countries)
- return countries
+  // console.log(countries)
+  return countries
     .map(({ name, flags }) => {
       return `
           <li class="country-list__item">
@@ -49,12 +50,12 @@ function oneCountryInfo(countries) {
           `
     })
     .join('')
- 
+  
 }
 
 function countriesList(countries) {
- console.log(countries)
-  return countries
+//  console.log(countries)
+return countries
     .map(({ capital, population, languages }) => {
       return `
         <ul >
@@ -65,9 +66,8 @@ function countriesList(countries) {
         `
     })
     .join('')
- 
+  
 }
-
 
 function noCountry(){
     Notiflix.Notify.failure('Oops, there is no country with that name')
